@@ -1,9 +1,8 @@
-package com.aquaticcreative.aquatichomes.managers;
+package dev.kiteflow.homeward.managers;
 
-import com.aquaticcreative.aquatichomes.AquaticHomes;
-import com.aquaticcreative.aquatichomes.utils.Formatting;
+import dev.kiteflow.homeward.Homeward;
+import dev.kiteflow.homeward.utils.Formatting;
 import com.mysql.cj.jdbc.MysqlDataSource;
-import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -14,19 +13,17 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-import static com.aquaticcreative.aquatichomes.AquaticHomes.plugin;
-
 public class DatabaseManager {
     private static Connection connection;
 
     public static void setup(){
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+        Bukkit.getScheduler().runTaskAsynchronously(Homeward.plugin, () -> {
             MysqlDataSource dataSource = new MysqlDataSource();
-            dataSource.setServerName(AquaticHomes.config.getString("host"));
-            dataSource.setPort(AquaticHomes.config.getInt("port"));
-            dataSource.setUser(AquaticHomes.config.getString("username"));
-            dataSource.setPassword(AquaticHomes.config.getString("password"));
-            dataSource.setDatabaseName(AquaticHomes.config.getString("database"));
+            dataSource.setServerName(Homeward.config.getString("host"));
+            dataSource.setPort(Homeward.config.getInt("port"));
+            dataSource.setUser(Homeward.config.getString("username"));
+            dataSource.setPassword(Homeward.config.getString("password"));
+            dataSource.setDatabaseName(Homeward.config.getString("database"));
 
             try {
                 connection = dataSource.getConnection();
@@ -42,10 +39,10 @@ public class DatabaseManager {
                                 "z int(11) NOT NULL)"
                 );
 
-                System.out.println("[AquaticHomes] Connected to Database!");
+                System.out.println("[Homeward] Connected to Database!");
             } catch (SQLException e) {
-                System.out.println("[AquaticHomes] Please check your database credentials!");
-                plugin.getServer().getPluginManager().disablePlugin(plugin);
+                System.out.println("[Homeward] Please check your database credentials!");
+                Homeward.plugin.getServer().getPluginManager().disablePlugin(Homeward.plugin);
             }
         });
     }
@@ -60,7 +57,7 @@ public class DatabaseManager {
                 return;
             }
 
-            int maxHomes = AquaticHomes.getMaxHomes(player);
+            int maxHomes = Homeward.getMaxHomes(player);
             rs = statement.executeQuery(String.format("SELECT name FROM homes WHERE owner = '%s'", player.getUniqueId()));
             int homes = 0;
             while(rs.next()) homes++;
@@ -69,7 +66,7 @@ public class DatabaseManager {
                 return;
             }
 
-            Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            Bukkit.getScheduler().runTaskAsynchronously(Homeward.plugin, () -> {
                 try {
                     statement.executeUpdate(String.format("INSERT INTO homes VALUES ('%s', '%s', '%s', '%s', '%s', '%s')",
                             name, player.getUniqueId(), location.getWorld().getName(),

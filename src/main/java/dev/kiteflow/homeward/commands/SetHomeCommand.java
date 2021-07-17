@@ -1,15 +1,16 @@
-package com.aquaticcreative.aquatichomes.commands;
+package dev.kiteflow.homeward.commands;
 
-import com.aquaticcreative.aquatichomes.managers.DatabaseManager;
-import com.aquaticcreative.aquatichomes.utils.Formatting;
+import dev.kiteflow.homeward.managers.DatabaseManager;
+import dev.kiteflow.homeward.utils.Formatting;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 public class SetHomeCommand implements CommandExecutor {
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
         if(sender instanceof Player){
             Player player = (Player) sender;
 

@@ -1,12 +1,11 @@
-package com.aquaticcreative.aquatichomes.utils;
+package dev.kiteflow.homeward.utils;
 
-import com.aquaticcreative.aquatichomes.AquaticHomes;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
-import static com.aquaticcreative.aquatichomes.AquaticHomes.config;
+import static dev.kiteflow.homeward.Homeward.config;
 
+@SuppressWarnings("ConstantConditions")
 public class Formatting {
 
     public static Component homeCreated;

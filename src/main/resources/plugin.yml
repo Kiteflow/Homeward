@@ -1,7 +1,7 @@
-name: AquaticHomes
+name: Homeward
 version: 1.0.0
 author: Kiteflow
-main: com.aquaticcreative.aquatichomes.AquaticHomes
+main: dev.kiteflow.homeward.Homeward
 api-version: 1.17
 commands:
   deletehome:

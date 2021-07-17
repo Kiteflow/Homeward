@@ -1,15 +1,16 @@
-package com.aquaticcreative.aquatichomes.commands;
+package dev.kiteflow.homeward.commands;
 
-import com.aquaticcreative.aquatichomes.managers.DatabaseManager;
+import dev.kiteflow.homeward.managers.DatabaseManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
 public class SetHomeCompleter implements TabCompleter {
     @Override
-    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, String[] args) {
         if(args.length == 1){
             return DatabaseManager.getHomes(args[0]);
         }else return null;
