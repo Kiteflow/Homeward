@@ -7,10 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 
 public class DatabaseManager {
@@ -18,15 +15,19 @@ public class DatabaseManager {
 
     public static void setup(){
         Bukkit.getScheduler().runTaskAsynchronously(Homeward.plugin, () -> {
-            MysqlDataSource dataSource = new MysqlDataSource();
-            dataSource.setServerName(Homeward.config.getString("host"));
-            dataSource.setPort(Homeward.config.getInt("port"));
-            dataSource.setUser(Homeward.config.getString("username"));
-            dataSource.setPassword(Homeward.config.getString("password"));
-            dataSource.setDatabaseName(Homeward.config.getString("database"));
-
             try {
-                connection = dataSource.getConnection();
+                if(Homeward.config.getBoolean("mysql")){
+                    MysqlDataSource dataSource = new MysqlDataSource();
+                    dataSource.setServerName(Homeward.config.getString("host"));
+                    dataSource.setPort(Homeward.config.getInt("port"));
+                    dataSource.setUser(Homeward.config.getString("username"));
+                    dataSource.setPassword(Homeward.config.getString("password"));
+                    dataSource.setDatabaseName(Homeward.config.getString("database"));
+                    connection = dataSource.getConnection();
+                }else{
+                    String url = "jdbc:sqlite:" + Homeward.plugin.getDataFolder() + "homes.db";
+                    connection = DriverManager.getConnection(url);
+                }
 
                 Statement statement = connection.createStatement();
                 statement.executeUpdate(

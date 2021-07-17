@@ -1,11 +1,14 @@
-host: test.testymctestface.com
+# Database settings, if MySQL is disabled, data will be stored locally in homes.db
+mysql: false
+host: test.com
 port: 3306
-username: testman
-password: "notpassword"
+username: test
+password: "password"
 database: test
 
+#
 defaulthomes: 1
-maxhomes: 12
+maxhomes: 10
 
 prefix: "&3[Homeward]"
 prefixEnabled: true
