@@ -1,5 +1,6 @@
 package dev.kiteflow.homeward.commands;
 
+import dev.kiteflow.homeward.Homeward;
 import dev.kiteflow.homeward.managers.DatabaseManager;
 import dev.kiteflow.homeward.utils.Formatting;
 import org.bukkit.command.Command;
@@ -16,7 +17,7 @@ public class SetHomeCommand implements CommandExecutor {
 
             if(args.length == 1){
                 DatabaseManager.createHome(player, args[0], player.getLocation());
-            }else player.sendMessage(Formatting.invalidFormat);
+            }else Homeward.adventure.player(player).sendMessage(Formatting.invalidFormat);
         }else System.out.println("You must be a player to do this!");
 
         return true;

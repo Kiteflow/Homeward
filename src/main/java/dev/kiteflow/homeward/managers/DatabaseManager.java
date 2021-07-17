@@ -54,7 +54,7 @@ public class DatabaseManager {
 
             ResultSet rs = statement.executeQuery(String.format("SELECT name FROM homes WHERE LOWER(name) = LOWER('%s')", name));
             if(rs.next()){
-                player.sendMessage(Formatting.homeNameInUse);
+                Homeward.adventure.player(player).sendMessage(Formatting.homeNameInUse);
                 return;
             }
 
@@ -63,17 +63,18 @@ public class DatabaseManager {
             int homes = 0;
             while(rs.next()) homes++;
             if(homes + 1 > maxHomes && maxHomes != 0){
-                player.sendMessage(Formatting.homeLimitReached);
+                Homeward.adventure.player(player).sendMessage(Formatting.homeLimitReached);
                 return;
             }
 
             Bukkit.getScheduler().runTaskAsynchronously(Homeward.plugin, () -> {
                 try {
+                    //noinspection ConstantConditions
                     statement.executeUpdate(String.format("INSERT INTO homes VALUES ('%s', '%s', '%s', '%s', '%s', '%s')",
                             name, player.getUniqueId(), location.getWorld().getName(),
                             location.getBlockX(), location.getBlockY(), location.getBlockZ()));
 
-                    player.sendMessage(Formatting.homeCreated);
+                    Homeward.adventure.player(player).sendMessage(Formatting.homeCreated);
                 } catch (SQLException e) { e.printStackTrace(); }
             });
         } catch (SQLException e) { e.printStackTrace(); }
@@ -88,9 +89,9 @@ public class DatabaseManager {
                 Location location = new Location(Bukkit.getWorld(rs.getString("world")),
                         rs.getInt("x"), rs.getInt("y"), rs.getInt("z"));
                 player.teleport(location);
-                player.sendMessage(Formatting.teleportedToHome);
+                Homeward.adventure.player(player).sendMessage(Formatting.teleportedToHome);
             }else{
-                player.sendMessage(Formatting.homeNotFound);
+                Homeward.adventure.player(player).sendMessage(Formatting.homeNotFound);
             }
         } catch (SQLException e) { e.printStackTrace(); }
     }
@@ -101,17 +102,17 @@ public class DatabaseManager {
 
             ResultSet rs = statement.executeQuery(String.format("SELECT name FROM homes WHERE LOWER(name) = LOWER('%s')", name));
             if(!rs.next()){
-                player.sendMessage(Formatting.homeNotFound);
+                Homeward.adventure.player(player).sendMessage(Formatting.homeNotFound);
                 return;
             }
             rs = statement.executeQuery(String.format("SELECT name FROM homes WHERE LOWER(name) = LOWER('%s') AND owner = '%s'", name, player.getUniqueId()));
             if(!rs.next() && !player.hasPermission("aquatichomes.admin")){
-                player.sendMessage(Formatting.dontOwnThisHome);
+                Homeward.adventure.player(player).sendMessage(Formatting.dontOwnThisHome);
                 return;
             }
 
             statement.executeUpdate(String.format("DELETE FROM homes WHERE LOWER(name) = LOWER('%s') AND owner = '%s'", name, player.getUniqueId()));
-            player.sendMessage("Home deleted!");
+            Homeward.adventure.player(player).sendMessage(Formatting.homeDeleted);
         } catch (SQLException e) { e.printStackTrace(); }
     }
 

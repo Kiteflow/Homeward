@@ -1,5 +1,6 @@
 package dev.kiteflow.homeward.commands;
 
+import dev.kiteflow.homeward.Homeward;
 import dev.kiteflow.homeward.managers.DatabaseManager;
 import dev.kiteflow.homeward.utils.Formatting;
 import net.kyori.adventure.text.Component;
@@ -31,7 +32,7 @@ public class HomesCommand implements CommandExecutor {
 
             Component homesMessage = Component.text("").append(Formatting.homesListTitle).append(homesList);
 
-            player.sendMessage(homesMessage);
+            Homeward.adventure.player(player).sendMessage(homesMessage);
         }else System.out.println("You must be a player to do this!");
 
         return true;
