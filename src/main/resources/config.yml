@@ -16,7 +16,7 @@ prefixEnabled: true
 homeCreated: "&aHome created!"
 teleportedToHome: "&aTeleported to home!"
 
-homesListTitle: "&9Homes -"
+homesListTitle: "&e&lHomes -"
 
 homeNameInUse: "&cHome name already in use!"
 homeLimitReached: "&cHome limit reached!"
