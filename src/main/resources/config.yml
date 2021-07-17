@@ -1,0 +1,35 @@
+# Yo what's good it's your boy Kiteflow coming back at you with another epic plugin review.
+# Today we have the awesome AquaticHomes
+# We have some permissions ya might wanna know.
+# aquatichomes.amount.x - The amount of homes a player can have (with x being the number)
+# aquatichomes.admin - Allows for unlimited homes and the ability to delete any home.
+# Coming up next, your database info:
+host: test.testymctestface.com
+port: 3306
+username: testman
+password: "notpassword"
+database: test
+
+# Now it's time to set some home limits!
+defaulthomes: 1
+maxhomes: 12
+
+# Formatting time baby!
+prefix: "&l[AquaticHomes]"
+prefixEnabled: true
+
+# These are probably what you would want to format as positive messages
+homeCreated: "&aHome created!"
+teleportedToHome: "&aTeleported to home!"
+
+# This is for the players home list, the actual homes will always be white
+homesListTitle: "&b&lHomes -"
+
+# These are probably what you would want to format as negative messages
+homeNameInUse: "&cHome name already in use!"
+homeLimitReached: "&cHome limit reached!"
+homeNotFound: "&cHome not found!"
+dontOwnThisHome: "&cYou don't own this home!"
+homeDeleted: "&cHome deleted!"
+noHomesSet: "&cNo homes set!"
+invalidFormat: "&cInvalid format!"

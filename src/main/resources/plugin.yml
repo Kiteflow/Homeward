@@ -1,0 +1,15 @@
+name: AquaticHomes
+version: 1.0.0
+author: Kiteflow
+main: com.aquaticcreative.aquatichomes.AquaticHomes
+api-version: 1.17
+commands:
+  deletehome:
+    description: Deletes a player home
+    aliases: [delhome]
+  home:
+    description: Teleport to a player home
+  homes:
+    description: View your homes
+  sethome:
+    description: Sets a player home
