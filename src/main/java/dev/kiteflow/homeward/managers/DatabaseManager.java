@@ -168,8 +168,6 @@ public class DatabaseManager {
             deleteHome.setString(1, name);
             deleteHome.setString(2, player.getUniqueId().toString());
 
-            System.out.println(deleteHome.toString());
-
             deleteHome.execute();
             Homeward.adventure.player(player).sendMessage(Formatting.homeDeleted);
 
