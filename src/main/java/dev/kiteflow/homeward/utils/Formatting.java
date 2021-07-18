@@ -19,6 +19,7 @@ public class Formatting {
     public static Component dontOwnThisHome;
     public static Component homeDeleted;
     public static Component noHomesSet;
+    public static Component cannotSetInWorld;
     public static Component invalidFormat;
 
     public static void setStrings() {
@@ -44,6 +45,8 @@ public class Formatting {
             homeDeleted = Component.text("")
                     .append(prefix).append(LegacyComponentSerializer.legacyAmpersand().deserialize(config.getString("homeDeleted")));
             noHomesSet = LegacyComponentSerializer.legacyAmpersand().deserialize(config.getString("noHomesSet"));
+            cannotSetInWorld = Component.text("")
+                    .append(prefix).append(LegacyComponentSerializer.legacyAmpersand().deserialize(config.getString("cannotSetInWorld")));
             invalidFormat = Component.text("")
                     .append(prefix).append(LegacyComponentSerializer.legacyAmpersand().deserialize(config.getString("invalidFormat")));
         }else{
@@ -58,6 +61,7 @@ public class Formatting {
             dontOwnThisHome = LegacyComponentSerializer.legacyAmpersand().deserialize(config.getString("dontOwnThisHome"));
             homeDeleted = LegacyComponentSerializer.legacyAmpersand().deserialize(config.getString("homeDeleted"));
             noHomesSet = LegacyComponentSerializer.legacyAmpersand().deserialize(config.getString("noHomesSet"));
+            cannotSetInWorld = LegacyComponentSerializer.legacyAmpersand().deserialize(config.getString("cannotSetInWorld"));
             invalidFormat = LegacyComponentSerializer.legacyAmpersand().deserialize(config.getString("invalidFormat"));
         }
     }

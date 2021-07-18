@@ -18,7 +18,7 @@ public final class Homeward extends JavaPlugin {
 
     public static int getMaxHomes(Player p){
         if(p.hasPermission("homeward.admin")) return 0;
-        for(int i = 1; i < config.getInt("maxhomes"); i++){
+        for(int i = 1; i < 32; i++){
             String permission = String.format("homeward.amount.%s", i);
 
             if(p.hasPermission(permission)) return i;

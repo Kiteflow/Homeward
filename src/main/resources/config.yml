@@ -1,4 +1,11 @@
-# Database settings, if MySQL is disabled, data will be stored locally in homes.db
+# Hi there :) Welcome to the Homeward config!
+# Thanks so much for installing Homeward, I hope you find it useful!
+# Homeward was designed to be a minimalist, customisable homes plugin
+# Not to mention we're open source!
+
+# Time to configure how you want your homes stored.
+# If you are storing a lot of homes, or have access to a MySQL database, I would highly suggest using MySQL.
+# Otherwise, you can just ignore this section, as Homeward can function without it!
 mysql: false
 host: test.com
 port: 3306
@@ -6,22 +13,40 @@ username: test
 password: "password"
 database: test
 
-#
+# Here's where you set how many homes you want people to have by default
+# There is a 32 home limit for anyone who hasn't got the "homeward.admin" permission.
+# Home limits are set by permissions too! Just add "homeward.amount.x" with x being the home amount
 defaulthomes: 1
-maxhomes: 10
 
+# Any worlds you that homes shouldn't be available in should be put here
+# Just remember "homeward.admin" does bypass this
+disabled-worlds:
+  - world_nether
+  - world_the_end
+
+# If you want a custom prefix to appear before your messages, this is what you want to use!
+# If you don't want a custom prefix, or any prefix at all, just change prefixEnabled to false.
 prefix: "&3[Homeward]"
 prefixEnabled: true
 
+# Here comes the messages! All messages Homeward sends to a player are configurable.
+
+# We recommend that these be a positive color, but it's your decision!
 homeCreated: "&aHome created!"
 teleportedToHome: "&aTeleported to home!"
 
 homesListTitle: "&e&lHomes -"
 
+# We would recommend these be a more negative color, but again, it's customisable for a reason!
 homeNameInUse: "&cHome name already in use!"
 homeLimitReached: "&cHome limit reached!"
 homeNotFound: "&cHome not found!"
 dontOwnThisHome: "&cYou don't own this home!"
 homeDeleted: "&cHome deleted!"
 noHomesSet: "&cNo homes set!"
+cannotSetInWorld: "&cCannot set a home in this world!"
 invalidFormat: "&cInvalid format!"
+
+# Thanks for configuring Homeward! I hope it serves you well.
+# If you have any bugs to report, please make a github issue!
+# https://github.com/Kiteflow/Homeward

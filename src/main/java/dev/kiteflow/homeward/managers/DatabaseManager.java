@@ -1,134 +1,201 @@
 package dev.kiteflow.homeward.managers;
 
+import com.mysql.cj.jdbc.MysqlDataSource;
 import dev.kiteflow.homeward.Homeward;
 import dev.kiteflow.homeward.utils.Formatting;
-import com.mysql.cj.jdbc.MysqlDataSource;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.UUID;
 
+import static dev.kiteflow.homeward.Homeward.config;
+
+@SuppressWarnings("ConstantConditions")
 public class DatabaseManager {
-    private static Connection connection;
+    private static boolean mySql;
+    private static MysqlDataSource dataSource;
 
-    public static void setup(){
-        Bukkit.getScheduler().runTaskAsynchronously(Homeward.plugin, () -> {
-            try {
-                if(Homeward.config.getBoolean("mysql")){
-                    MysqlDataSource dataSource = new MysqlDataSource();
-                    dataSource.setServerName(Homeward.config.getString("host"));
-                    dataSource.setPort(Homeward.config.getInt("port"));
-                    dataSource.setUser(Homeward.config.getString("username"));
-                    dataSource.setPassword(Homeward.config.getString("password"));
-                    dataSource.setDatabaseName(Homeward.config.getString("database"));
-                    connection = dataSource.getConnection();
-                }else{
-                    String url = "jdbc:sqlite:" + Homeward.plugin.getDataFolder() + "homes.db";
-                    connection = DriverManager.getConnection(url);
-                }
-
-                Statement statement = connection.createStatement();
-                statement.executeUpdate(
-                        "CREATE TABLE IF NOT EXISTS homes (\n" +
-                                "name varchar(20) NOT NULL," +
-                                "owner varchar(36) NOT NULL," +
-                                "world varchar(20) NOT NULL," +
-                                "x int(11) NOT NULL," +
-                                "y int(11) NOT NULL," +
-                                "z int(11) NOT NULL)"
-                );
-
-                System.out.println("[Homeward] Connected to Database!");
-            } catch (SQLException e) {
-                System.out.println("[Homeward] Please check your database credentials!");
-                Homeward.plugin.getServer().getPluginManager().disablePlugin(Homeward.plugin);
+    private static Connection getConnection(){
+        Connection connection;
+        try {
+            if(mySql){
+                connection = dataSource.getConnection();
+            }else{
+                connection = DriverManager.getConnection("jdbc:sqlite:" + Homeward.plugin.getDataFolder() + "/homes.db");
             }
-        });
+
+            return connection;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
-    public static void createHome(Player player, String name, Location location){
+    public static void setup(){
+        mySql = config.getBoolean("mysql");
+        if(mySql){
+            dataSource = new MysqlDataSource();
+            dataSource.setServerName(config.getString("host"));
+            dataSource.setPort(config.getInt("port"));
+            dataSource.setUser(config.getString("username"));
+            dataSource.setPassword(config.getString("password"));
+            dataSource.setDatabaseName(config.getString("database"));
+        }
+
         try {
+            Connection connection = getConnection();
             Statement statement = connection.createStatement();
 
-            ResultSet rs = statement.executeQuery(String.format("SELECT name FROM homes WHERE LOWER(name) = LOWER('%s')", name));
-            if(rs.next()){
+            statement.executeUpdate(
+                    "CREATE TABLE IF NOT EXISTS homes (\n" +
+                            "name varchar(20) NOT NULL," +
+                            "owner varchar(36) NOT NULL," +
+                            "world varchar(36) NOT NULL," +
+                            "x int(11) NOT NULL," +
+                            "y int(11) NOT NULL," +
+                            "z int(11) NOT NULL)"
+            );
+
+            System.out.println("[Homeward] Connected to Database!");
+            statement.close();
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void createHome(Player player, String name, Location location) {
+        try {
+            Connection connection = getConnection();
+
+            if (config.getStringList("disabled-worlds").contains(location.getWorld().getName()) && !player.hasPermission("homeward.admin")) {
+                Homeward.adventure.player(player).sendMessage(Formatting.cannotSetInWorld);
+                connection.close();
+                return;
+            }
+
+            PreparedStatement nameCheck = connection.prepareStatement("SELECT name FROM homes WHERE LOWER(name) = LOWER(?)");
+            nameCheck.setString(1, name);
+            ResultSet nameResults = nameCheck.executeQuery();
+            if (nameResults.next()) {
                 Homeward.adventure.player(player).sendMessage(Formatting.homeNameInUse);
+                connection.close();
                 return;
             }
 
-            int maxHomes = Homeward.getMaxHomes(player);
-            rs = statement.executeQuery(String.format("SELECT name FROM homes WHERE owner = '%s'", player.getUniqueId()));
+            PreparedStatement maxHomesCheck = connection.prepareStatement("SELECT name FROM homes WHERE owner = ?");
+            maxHomesCheck.setString(1, player.getUniqueId().toString());
+            ResultSet maxHomesResults = maxHomesCheck.executeQuery();
+
             int homes = 0;
-            while(rs.next()) homes++;
-            if(homes + 1 > maxHomes && maxHomes != 0){
+            int maxHomes = Homeward.getMaxHomes(player);
+            while (maxHomesResults.next()) {
+                homes++;
+            }
+
+            if (homes + 1 > maxHomes && maxHomes != 0) {
                 Homeward.adventure.player(player).sendMessage(Formatting.homeLimitReached);
+                connection.close();
                 return;
             }
 
-            Bukkit.getScheduler().runTaskAsynchronously(Homeward.plugin, () -> {
-                try {
-                    //noinspection ConstantConditions
-                    statement.executeUpdate(String.format("INSERT INTO homes VALUES ('%s', '%s', '%s', '%s', '%s', '%s')",
-                            name, player.getUniqueId(), location.getWorld().getName(),
-                            location.getBlockX(), location.getBlockY(), location.getBlockZ()));
+            PreparedStatement setHome = connection.prepareStatement("INSERT INTO homes VALUES(?, ?, ?, ?, ?, ?)");
+            setHome.setString(1, name);
+            setHome.setString(2, player.getUniqueId().toString());
+            setHome.setString(3, location.getWorld().getUID().toString());
+            setHome.setInt(4, location.getBlockX());
+            setHome.setInt(5, location.getBlockY());
+            setHome.setInt(6, location.getBlockZ());
 
-                    Homeward.adventure.player(player).sendMessage(Formatting.homeCreated);
-                } catch (SQLException e) { e.printStackTrace(); }
-            });
-        } catch (SQLException e) { e.printStackTrace(); }
+            setHome.executeUpdate();
+            Homeward.adventure.player(player).sendMessage(Formatting.homeCreated);
+
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void getHome(Player player, String name){
         try {
-            Statement statement = connection.createStatement();
+            Connection connection = getConnection();
+            PreparedStatement getHome = connection.prepareStatement("SELECT world, x, y, z FROM homes WHERE LOWER(name) = LOWER(?)");
+            getHome.setString(1, name);
 
-            ResultSet rs = statement.executeQuery(String.format("SELECT world, x, y, z FROM homes WHERE LOWER(name) = LOWER('%s')", name));
-            if(rs.next()){
-                Location location = new Location(Bukkit.getWorld(rs.getString("world")),
-                        rs.getInt("x"), rs.getInt("y"), rs.getInt("z"));
+            ResultSet home = getHome.executeQuery();
+            if(home.next()){
+                Location location = new Location(Bukkit.getWorld(UUID.fromString(home.getString("world"))),
+                        home.getInt("x"), home.getInt("y"), home.getInt("z"));
                 player.teleport(location);
                 Homeward.adventure.player(player).sendMessage(Formatting.teleportedToHome);
             }else{
                 Homeward.adventure.player(player).sendMessage(Formatting.homeNotFound);
             }
-        } catch (SQLException e) { e.printStackTrace(); }
+
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void delHome(Player player, String name){
         try {
-            Statement statement = connection.createStatement();
+            Connection connection = getConnection();
 
-            ResultSet rs = statement.executeQuery(String.format("SELECT name FROM homes WHERE LOWER(name) = LOWER('%s')", name));
-            if(!rs.next()){
+            PreparedStatement nameCheck = connection.prepareStatement("SELECT name FROM homes WHERE LOWER(name) = LOWER(?)");
+            nameCheck.setString(1, name);
+            ResultSet nameResults = nameCheck.executeQuery();
+            if(!nameResults.next()) {
                 Homeward.adventure.player(player).sendMessage(Formatting.homeNotFound);
-                return;
-            }
-            rs = statement.executeQuery(String.format("SELECT name FROM homes WHERE LOWER(name) = LOWER('%s') AND owner = '%s'", name, player.getUniqueId()));
-            if(!rs.next() && !player.hasPermission("aquatichomes.admin")){
-                Homeward.adventure.player(player).sendMessage(Formatting.dontOwnThisHome);
+                connection.close();
                 return;
             }
 
-            statement.executeUpdate(String.format("DELETE FROM homes WHERE LOWER(name) = LOWER('%s') AND owner = '%s'", name, player.getUniqueId()));
+            PreparedStatement ownerCheck = connection.prepareStatement("SELECT name FROM homes WHERE LOWER(name) = LOWER(?) AND owner = ?");
+            ownerCheck.setString(1, name);
+            ownerCheck.setString(2, player.getUniqueId().toString());
+            ResultSet ownerResults = ownerCheck.executeQuery();
+            if(!ownerResults.next() && !player.hasPermission("homeward.admin")){
+                Homeward.adventure.player(player).sendMessage(Formatting.dontOwnThisHome);
+                connection.close();
+                return;
+            }
+
+            PreparedStatement deleteHome = connection.prepareStatement("DELETE FROM homes WHERE LOWER(name) = LOWER(?) AND owner = ?");
+            deleteHome.setString(1, name);
+            deleteHome.setString(2, player.getUniqueId().toString());
+
+            System.out.println(deleteHome.toString());
+
+            deleteHome.execute();
             Homeward.adventure.player(player).sendMessage(Formatting.homeDeleted);
-        } catch (SQLException e) { e.printStackTrace(); }
+
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public static ArrayList<String> getHomes(String search){
         try {
-            Statement statement = connection.createStatement();
+            Connection connection = getConnection();
             ArrayList<String> homes = new ArrayList<>();
 
             if(search.equals("")){
-                ResultSet rs = statement.executeQuery("SELECT name FROM homes WHERE 1 ORDER BY name");
-                while(rs.next()) homes.add(rs.getString("name"));
+                PreparedStatement allHomesSearch = connection.prepareStatement("SELECT name FROM homes WHERE 1 ORDER BY name");
+                ResultSet homesResults = allHomesSearch.executeQuery();
+                while(homesResults.next()) homes.add(homesResults.getString("name"));
             }else{
-                ResultSet rs = statement.executeQuery("SELECT name FROM homes WHERE name LIKE '%" + search + "%'");
-                while(rs.next()) homes.add(rs.getString("name"));
+                PreparedStatement homesSearch = connection.prepareStatement("SELECT name FROM homes WHERE name LIKE ?");
+                homesSearch.setString(1, "%" + search + "%");
+                ResultSet homesResults = homesSearch.executeQuery();
+                while(homesResults.next()) homes.add(homesResults.getString("name"));
             }
 
+            connection.close();
             return homes;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -138,12 +205,15 @@ public class DatabaseManager {
 
     public static ArrayList<String> getPlayerHomes(Player player){
         try {
-            Statement statement = connection.createStatement();
-
+            Connection connection = getConnection();
             ArrayList<String> homes = new ArrayList<>();
-            ResultSet rs = statement.executeQuery(String.format("SELECT name FROM homes WHERE owner = '%s'", player.getUniqueId()));
-            while(rs.next()) homes.add(rs.getString("name"));
 
+            PreparedStatement homesSearch = connection.prepareStatement("SELECT name FROM homes WHERE owner = ?");
+            homesSearch.setString(1, player.getUniqueId().toString());
+            ResultSet homesResults = homesSearch.executeQuery();
+            while(homesResults.next()) homes.add(homesResults.getString("name"));
+
+            connection.close();
             return homes;
         } catch (SQLException e) {
             e.printStackTrace();
