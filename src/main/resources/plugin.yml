@@ -1,5 +1,5 @@
 name: Homeward
-version: 1.0.0
+version: 1.0.1
 author: Kiteflow
 main: dev.kiteflow.homeward.Homeward
 api-version: 1.17

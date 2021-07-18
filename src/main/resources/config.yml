@@ -15,7 +15,7 @@ database: test
 
 # Here's where you set how many homes you want people to have by default
 # There is a 32 home limit for anyone who hasn't got the "homeward.admin" permission.
-# Home limits are set by permissions too! Just add "homeward.amount.x" with x being the home amount
+# Home limits are set by permissions too! Just add "homeward.homes.x" with x being the home amount
 defaulthomes: 1
 
 # Any worlds you that homes shouldn't be available in should be put here
