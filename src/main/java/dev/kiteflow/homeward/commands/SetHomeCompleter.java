@@ -13,6 +13,6 @@ public class SetHomeCompleter implements TabCompleter {
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, String[] args) {
         if(args.length == 1){
             return DatabaseManager.getHomes(args[0]);
-        } else return null;
+        }else return null;
     }
 }

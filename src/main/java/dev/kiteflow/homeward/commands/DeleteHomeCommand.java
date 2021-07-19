@@ -15,12 +15,10 @@ public class DeleteHomeCommand implements CommandExecutor {
         if(sender instanceof Player){
             Player player = (Player) sender;
 
-            if(player.hasPermission("homeward.homes")) {
-                if (args.length == 1) {
-                    DatabaseManager.delHome(player, args[0]);
-                } else Homeward.adventure.player(player).sendMessage(Formatting.invalidFormat);
-            } else Homeward.adventure.player(player).sendMessage(Formatting.noPermission);
-        } else System.out.println("You must be a player to do this!");
+            if(args.length == 1){
+                DatabaseManager.delHome(player, args[0]);
+            }else Homeward.adventure.player(player).sendMessage(Formatting.invalidFormat);
+        }else System.out.println("You must be a player to do this!");
 
         return true;
     }

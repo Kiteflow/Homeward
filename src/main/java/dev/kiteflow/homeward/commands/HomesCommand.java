@@ -19,23 +19,21 @@ public class HomesCommand implements CommandExecutor {
         if(sender instanceof Player){
             Player player = (Player) sender;
 
-            if(player.hasPermission("homeward.homes")){
-                ArrayList<String> homes = DatabaseManager.getPlayerHomes(player);
-                Component homesList = Component.text("");
+            ArrayList<String> homes = DatabaseManager.getPlayerHomes(player);
+            Component homesList = Component.text("");
 
-                //noinspection ConstantConditions
-                for (int i = 0; i < homes.size(); i++) {
-                    if(i == 0) homesList = homesList.append(Component.text(homes.get(i), NamedTextColor.WHITE));
-                    else homesList = homesList.append(Component.text(", " + homes.get(i), NamedTextColor.WHITE));
-                }
+            //noinspection ConstantConditions
+            for (int i = 0; i < homes.size(); i++) {
+                if(i == 0) homesList = homesList.append(Component.text(homes.get(i), NamedTextColor.WHITE));
+                else homesList = homesList.append(Component.text(", " + homes.get(i), NamedTextColor.WHITE));
+            }
 
-                if(homes.size() == 0) homesList = Formatting.noHomesSet;
+            if(homes.size() == 0) homesList = Formatting.noHomesSet;
 
-                Component homesMessage = Component.text("").append(Formatting.homesListTitle).append(homesList);
+            Component homesMessage = Component.text("").append(Formatting.homesListTitle).append(homesList);
 
-                Homeward.adventure.player(player).sendMessage(homesMessage);
-            } else Homeward.adventure.player(player).sendMessage(Formatting.noPermission);
-        } else System.out.println("You must be a player to do this!");
+            Homeward.adventure.player(player).sendMessage(homesMessage);
+        }else System.out.println("You must be a player to do this!");
 
         return true;
     }
