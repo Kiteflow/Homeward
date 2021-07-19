@@ -17,8 +17,8 @@ public class HomeCommand implements CommandExecutor {
 
             if(args.length == 1){
                 DatabaseManager.getHome(player, args[0]);
-            }else Homeward.adventure.player(player).sendMessage(Formatting.invalidFormat);
-        }else System.out.println("You must be a player to do this!");
+            } else Homeward.adventure.player(player).sendMessage(Formatting.invalidFormat);
+        } else System.out.println("You must be a player to do this!");
 
         return true;
     }

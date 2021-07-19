@@ -21,6 +21,7 @@ public class Formatting {
     public static Component noHomesSet;
     public static Component cannotSetInWorld;
     public static Component invalidFormat;
+    public static Component noPermission;
 
     public static void setStrings() {
         if(config.getBoolean("prefixEnabled")){
@@ -49,6 +50,8 @@ public class Formatting {
                     .append(prefix).append(LegacyComponentSerializer.legacyAmpersand().deserialize(config.getString("cannotSetInWorld")));
             invalidFormat = Component.text("")
                     .append(prefix).append(LegacyComponentSerializer.legacyAmpersand().deserialize(config.getString("invalidFormat")));
+            noPermission = Component.text("")
+                    .append(prefix).append(LegacyComponentSerializer.legacyAmpersand().deserialize(config.getString("noPermission")));
         }else{
             homeCreated = LegacyComponentSerializer.legacyAmpersand().deserialize(config.getString("homeCreated"));
             teleportedToHome = LegacyComponentSerializer.legacyAmpersand().deserialize(config.getString("teleportedToHome"));
@@ -63,6 +66,7 @@ public class Formatting {
             noHomesSet = LegacyComponentSerializer.legacyAmpersand().deserialize(config.getString("noHomesSet"));
             cannotSetInWorld = LegacyComponentSerializer.legacyAmpersand().deserialize(config.getString("cannotSetInWorld"));
             invalidFormat = LegacyComponentSerializer.legacyAmpersand().deserialize(config.getString("invalidFormat"));
+            noPermission = LegacyComponentSerializer.legacyAmpersand().deserialize(config.getString("noPermission"));
         }
     }
 }

@@ -14,6 +14,7 @@ password: "password"
 database: test
 
 # Here's where you set how many homes you want people to have by default
+# Make sure to give homeward.homes to be able to set homes
 # There is a 32 home limit for anyone who hasn't got the "homeward.admin" permission.
 # Home limits are set by permissions too! Just add "homeward.homes.x" with x being the home amount
 defaulthomes: 1
@@ -46,6 +47,7 @@ homeDeleted: "&cHome deleted!"
 noHomesSet: "&cNo homes set!"
 cannotSetInWorld: "&cCannot set a home in this world!"
 invalidFormat: "&cInvalid format!"
+noPermission: "&cYou do not have permission!"
 
 # Thanks for configuring Homeward! I hope it serves you well.
 # If you have any bugs to report, please make a github issue!
