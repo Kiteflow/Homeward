@@ -5,6 +5,7 @@ import dev.kiteflow.homeward.managers.DatabaseManager;
 import dev.kiteflow.homeward.utils.Formatting;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -18,9 +19,24 @@ public class HomesCommand implements CommandExecutor {
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
         if(sender instanceof Player){
             Player player = (Player) sender;
+            Player target;
 
-            ArrayList<String> homes = DatabaseManager.getPlayerHomes(player);
-            Component homesList = Component.text("");
+            if(args.length == 0){
+                target = player;
+            }else if(args.length == 1){
+                target = Bukkit.getPlayer(args[0]);
+
+                if(target == null){
+                    Homeward.adventure.player(player).sendMessage(Formatting.playerNotFound);
+                    return true;
+                }
+            }else{
+                Homeward.adventure.player(player).sendMessage(Formatting.invalidFormat);
+                return true;
+            }
+
+            ArrayList<String> homes = DatabaseManager.getPlayerHomes(target);
+            Component homesList = Component.text(" ");
 
             //noinspection ConstantConditions
             for (int i = 0; i < homes.size(); i++) {
@@ -28,13 +44,12 @@ public class HomesCommand implements CommandExecutor {
                 else homesList = homesList.append(Component.text(", " + homes.get(i), NamedTextColor.WHITE));
             }
 
-            if(homes.size() == 0) homesList = Formatting.noHomesSet;
+            if(homes.size() == 0) homesList = Formatting.noHomesFound;
 
             Component homesMessage = Component.text("").append(Formatting.homesListTitle).append(homesList);
 
             Homeward.adventure.player(player).sendMessage(homesMessage);
         }else System.out.println("You must be a player to do this!");
-
         return true;
     }
 }

@@ -1,4 +1,4 @@
-package dev.kiteflow.homeward.commands;
+package dev.kiteflow.homeward.commands.completers;
 
 import dev.kiteflow.homeward.managers.DatabaseManager;
 import org.bukkit.command.Command;
@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class SetHomeCompleter implements TabCompleter {
+public class HomeCompleter implements TabCompleter {
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, String[] args) {
         if(args.length == 1){

@@ -8,61 +8,30 @@ import static dev.kiteflow.homeward.Homeward.config;
 @SuppressWarnings("ConstantConditions")
 public class Formatting {
 
-    public static Component homeCreated;
-    public static Component teleportedToHome;
+    public static Component prefix = config.getBoolean("prefixEnabled") ?
+            LegacyComponentSerializer.legacyAmpersand().deserialize(config.getString("prefix").trim() + " ") : null;
 
-    public static Component homesListTitle;
+    public static Component homeCreated = createString("homeCreated");
+    public static Component teleportedToHome = createString("teleportedToHome");
 
-    public static Component homeNameInUse;
-    public static Component homeLimitReached;
-    public static Component homeNotFound;
-    public static Component dontOwnThisHome;
-    public static Component homeDeleted;
-    public static Component noHomesSet;
-    public static Component cannotSetInWorld;
-    public static Component invalidFormat;
+    public static Component homesListTitle = createString("homesListTitle");
 
-    public static void setStrings() {
-        if(config.getBoolean("prefixEnabled")){
-            Component prefix = LegacyComponentSerializer.legacyAmpersand().deserialize(config.getString("prefix").trim() + " ");
+    public static Component homeNameInUse = createString("homeNameInUse");
+    public static Component homeLimitReached = createString("homeLimitReached");
+    public static Component homeNotFound = createString("homeNotFound");
+    public static Component dontOwnThisHome = createString("dontOwnThisHome");
+    public static Component homeDeleted = createString("homeDeleted");
+    public static Component noHomesFound = createString("noHomesFound");
+    public static Component cannotSetInWorld = createString("cannotSetInWorld");
+    public static Component playerNotFound = createString("playerNotFound");
+    public static Component invalidFormat = createString("invalidFormat");
 
-            homeCreated = Component.text("")
-                    .append(prefix).append(LegacyComponentSerializer.legacyAmpersand().deserialize(config.getString("homeCreated")));
-            teleportedToHome = Component.text("")
-                    .append(prefix).append(LegacyComponentSerializer.legacyAmpersand().deserialize(config.getString("teleportedToHome")));
-
-            homesListTitle = Component.text("")
-                    .append(prefix).append(LegacyComponentSerializer.legacyAmpersand().deserialize(config.getString("homesListTitle").trim() + " "));
-
-            homeNameInUse = Component.text("")
-                    .append(prefix).append(LegacyComponentSerializer.legacyAmpersand().deserialize(config.getString("homeNameInUse")));
-            homeLimitReached = Component.text("")
-                    .append(prefix).append(LegacyComponentSerializer.legacyAmpersand().deserialize(config.getString("homeLimitReached")));
-            homeNotFound = Component.text("")
-                    .append(prefix).append(LegacyComponentSerializer.legacyAmpersand().deserialize(config.getString("homeNotFound")));
-            dontOwnThisHome = Component.text("")
-                    .append(prefix).append(LegacyComponentSerializer.legacyAmpersand().deserialize(config.getString("dontOwnThisHome")));
-            homeDeleted = Component.text("")
-                    .append(prefix).append(LegacyComponentSerializer.legacyAmpersand().deserialize(config.getString("homeDeleted")));
-            noHomesSet = LegacyComponentSerializer.legacyAmpersand().deserialize(config.getString("noHomesSet"));
-            cannotSetInWorld = Component.text("")
-                    .append(prefix).append(LegacyComponentSerializer.legacyAmpersand().deserialize(config.getString("cannotSetInWorld")));
-            invalidFormat = Component.text("")
-                    .append(prefix).append(LegacyComponentSerializer.legacyAmpersand().deserialize(config.getString("invalidFormat")));
+    private static Component createString(String stringName){
+        if(prefix != null){
+            return Component.text("")
+                    .append(prefix).append(LegacyComponentSerializer.legacyAmpersand().deserialize(config.getString(stringName)));
         }else{
-            homeCreated = LegacyComponentSerializer.legacyAmpersand().deserialize(config.getString("homeCreated"));
-            teleportedToHome = LegacyComponentSerializer.legacyAmpersand().deserialize(config.getString("teleportedToHome"));
-
-            homesListTitle = LegacyComponentSerializer.legacyAmpersand().deserialize(config.getString("homesListTitle").trim() + " ");
-
-            homeNameInUse = LegacyComponentSerializer.legacyAmpersand().deserialize(config.getString("homeNameInUse"));
-            homeLimitReached = LegacyComponentSerializer.legacyAmpersand().deserialize(config.getString("homeLimitReached"));
-            homeNotFound = LegacyComponentSerializer.legacyAmpersand().deserialize(config.getString("homeNotFound"));
-            dontOwnThisHome = LegacyComponentSerializer.legacyAmpersand().deserialize(config.getString("dontOwnThisHome"));
-            homeDeleted = LegacyComponentSerializer.legacyAmpersand().deserialize(config.getString("homeDeleted"));
-            noHomesSet = LegacyComponentSerializer.legacyAmpersand().deserialize(config.getString("noHomesSet"));
-            cannotSetInWorld = LegacyComponentSerializer.legacyAmpersand().deserialize(config.getString("cannotSetInWorld"));
-            invalidFormat = LegacyComponentSerializer.legacyAmpersand().deserialize(config.getString("invalidFormat"));
+            return Component.text("").append(LegacyComponentSerializer.legacyAmpersand().deserialize(config.getString(stringName)));
         }
     }
 }

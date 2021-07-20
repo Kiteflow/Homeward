@@ -1,14 +1,18 @@
 name: Homeward
-version: 1.0.2
+version: 1.1.0
 author: Kiteflow
 main: dev.kiteflow.homeward.Homeward
 commands:
   deletehome:
-    description: Deletes a player home
+    description: Delete a players home
+    usage: /delhome <Home name>
     aliases: [delhome]
   home:
     description: Teleport to a player home
+    usage: /home <Home name>
   homes:
     description: View your homes
+    usage: /delhome <Player>
   sethome:
     description: Sets a player home
+    usage: /sethome <Home name>

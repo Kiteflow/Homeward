@@ -1,6 +1,8 @@
 package dev.kiteflow.homeward;
 
 import dev.kiteflow.homeward.commands.*;
+import dev.kiteflow.homeward.commands.completers.DeleteHomeCompleter;
+import dev.kiteflow.homeward.commands.completers.HomeCompleter;
 import dev.kiteflow.homeward.managers.DatabaseManager;
 import dev.kiteflow.homeward.utils.Formatting;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
@@ -8,7 +10,6 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.checkerframework.checker.nullness.qual.NonNull;
 
 public final class Homeward extends JavaPlugin {
 
@@ -29,8 +30,9 @@ public final class Homeward extends JavaPlugin {
     @SuppressWarnings("ConstantConditions")
     private void registerCommands(){
         this.getCommand("deletehome").setExecutor(new DeleteHomeCommand());
+        this.getCommand("deletehome").setTabCompleter(new DeleteHomeCompleter());
         this.getCommand("home").setExecutor(new HomeCommand());
-        this.getCommand("home").setTabCompleter(new SetHomeCompleter());
+        this.getCommand("home").setTabCompleter(new HomeCompleter());
         this.getCommand("homes").setExecutor(new HomesCommand());
         this.getCommand("sethome").setExecutor(new SetHomeCommand());
     }
@@ -44,7 +46,6 @@ public final class Homeward extends JavaPlugin {
         config = plugin.getConfig();
 
         DatabaseManager.setup();
-        Formatting.setStrings();
 
         registerCommands();
 
