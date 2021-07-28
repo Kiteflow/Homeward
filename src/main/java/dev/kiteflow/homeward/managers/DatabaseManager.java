@@ -164,9 +164,8 @@ public class DatabaseManager {
                 return;
             }
 
-            PreparedStatement deleteHome = connection.prepareStatement("DELETE FROM homes WHERE LOWER(name) = LOWER(?) AND owner = ?");
+            PreparedStatement deleteHome = connection.prepareStatement("DELETE FROM homes WHERE LOWER(name) = LOWER(?)");
             deleteHome.setString(1, name);
-            deleteHome.setString(2, player.getUniqueId().toString());
 
             deleteHome.execute();
             Homeward.adventure.player(player).sendMessage(Formatting.homeDeleted);
@@ -201,13 +200,13 @@ public class DatabaseManager {
         }
     }
 
-    public static ArrayList<String> getPlayerHomes(Player player){
+    public static ArrayList<String> getPlayerHomes(UUID player){
         try {
             Connection connection = getConnection();
             ArrayList<String> homes = new ArrayList<>();
 
             PreparedStatement homesSearch = connection.prepareStatement("SELECT name FROM homes WHERE owner = ?");
-            homesSearch.setString(1, player.getUniqueId().toString());
+            homesSearch.setString(1, player.toString());
             ResultSet homesResults = homesSearch.executeQuery();
             while(homesResults.next()) homes.add(homesResults.getString("name"));
 

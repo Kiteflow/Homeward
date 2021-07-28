@@ -13,7 +13,7 @@ public class DeleteHomeCompleter implements TabCompleter {
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, String[] args) {
         if(args.length == 1 && sender instanceof Player){
-            return DatabaseManager.getPlayerHomes((Player) sender);
+            return DatabaseManager.getPlayerHomes(((Player) sender).getUniqueId());
         }else return null;
     }
 }
