@@ -71,6 +71,15 @@ public class DatabaseManager {
         try {
             Connection connection = getConnection();
 
+            if(!config.getBoolean("unicode")){
+                name = name.replaceAll("[^\\u0000-\\u007F]+", "");
+            }
+
+            if(name.length() > config.getInt("maxlength") ){
+                Homeward.adventure.player(player).sendMessage(Formatting.invalidHomeName);
+                return;
+            }
+
             if (config.getStringList("disabled-worlds").contains(location.getWorld().getName()) && !player.hasPermission("homeward.admin")) {
                 Homeward.adventure.player(player).sendMessage(Formatting.cannotSetInWorld);
                 connection.close();
@@ -81,7 +90,7 @@ public class DatabaseManager {
             nameCheck.setString(1, name);
             ResultSet nameResults = nameCheck.executeQuery();
             if (nameResults.next()) {
-                Homeward.adventure.player(player).sendMessage(Formatting.homeNameInUse);
+                Homeward.adventure.player(player).sendMessage(Formatting.invalidFormat);
                 connection.close();
                 return;
             }

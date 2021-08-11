@@ -16,7 +16,7 @@ public class Formatting {
 
     public static Component homesListTitle = createString("homesListTitle");
 
-    public static Component homeNameInUse = createString("homeNameInUse");
+    public static Component invalidHomeName = createString("invalidHomeName");
     public static Component homeLimitReached = createString("homeLimitReached");
     public static Component homeNotFound = createString("homeNotFound");
     public static Component dontOwnThisHome = createString("dontOwnThisHome");

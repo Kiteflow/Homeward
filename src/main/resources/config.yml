@@ -13,6 +13,11 @@ username: test
 password: "password"
 database: test
 
+# Here is where you can set the max length a home name can be
+maxlength: 20
+# You can also enable non-english characters here
+unicode: false
+
 # Here's where you set how many homes you want people to have by default
 # There is a 32 home limit for anyone who hasn't got the "homeward.admin" permission.
 # Home limits are set by permissions too! Just add "homeward.homes.x" with x being the home amount
@@ -38,7 +43,7 @@ teleportedToHome: "&aTeleported to home!"
 homesListTitle: "&dHomes -"
 
 # We would recommend these be a more negative color, but again, it's customisable for a reason!
-homeNameInUse: "&cHome name already in use!"
+invalidHomeName: "&cInvalid home name!"
 homeLimitReached: "&cHome limit reached!"
 homeNotFound: "&cHome not found!"
 dontOwnThisHome: "&cYou don't own this home!"
