@@ -6,6 +6,7 @@ import dev.kiteflow.homeward.commands.completers.HomeCompleter;
 import dev.kiteflow.homeward.managers.DatabaseManager;
 import dev.kiteflow.homeward.utils.Formatting;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -48,6 +49,9 @@ public final class Homeward extends JavaPlugin {
         DatabaseManager.setup();
 
         registerCommands();
+
+        int pluginId = 13017;
+        Metrics metrics = new Metrics(this, pluginId);
 
         System.out.println("[Homeward] Homeward enabled!");
     }
