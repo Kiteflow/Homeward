@@ -51,7 +51,7 @@ public final class Homeward extends JavaPlugin {
         registerCommands();
 
         int pluginId = 13017;
-        Metrics metrics = new Metrics(this, pluginId);
+        new Metrics(this, pluginId);
 
         System.out.println("[Homeward] Homeward enabled!");
     }

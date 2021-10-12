@@ -1,7 +1,9 @@
 package dev.kiteflow.homeward.utils;
 
+import dev.kiteflow.homeward.Homeward;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import org.bukkit.entity.Player;
 
 import static dev.kiteflow.homeward.Homeward.config;
 
@@ -21,7 +23,6 @@ public class Formatting {
     public static Component homeNotFound = createString("homeNotFound");
     public static Component dontOwnThisHome = createString("dontOwnThisHome");
     public static Component homeDeleted = createString("homeDeleted");
-    public static Component noHomesFound = createString("noHomesFound");
     public static Component cannotSetInWorld = createString("cannotSetInWorld");
     public static Component playerNotFound = createString("playerNotFound");
     public static Component invalidFormat = createString("invalidFormat");
@@ -33,5 +34,9 @@ public class Formatting {
         }else{
             return Component.text("").append(LegacyComponentSerializer.legacyAmpersand().deserialize(config.getString(stringName)));
         }
+    }
+
+    public static void sendMessage(Player player, Component message){
+        Homeward.adventure.player(player).sendMessage(message);
     }
 }

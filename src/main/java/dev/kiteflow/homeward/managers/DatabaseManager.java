@@ -76,12 +76,12 @@ public class DatabaseManager {
             }
 
             if(name.length() > config.getInt("maxlength") ){
-                Homeward.adventure.player(player).sendMessage(Formatting.invalidHomeName);
+                Formatting.sendMessage(player, Formatting.invalidHomeName);
                 return;
             }
 
             if (config.getStringList("disabled-worlds").contains(location.getWorld().getName()) && !player.hasPermission("homeward.admin")) {
-                Homeward.adventure.player(player).sendMessage(Formatting.cannotSetInWorld);
+                Formatting.sendMessage(player, Formatting.cannotSetInWorld);
                 connection.close();
                 return;
             }
@@ -90,7 +90,7 @@ public class DatabaseManager {
             nameCheck.setString(1, name);
             ResultSet nameResults = nameCheck.executeQuery();
             if (nameResults.next()) {
-                Homeward.adventure.player(player).sendMessage(Formatting.invalidFormat);
+                Formatting.sendMessage(player, Formatting.invalidFormat);
                 connection.close();
                 return;
             }
@@ -106,7 +106,7 @@ public class DatabaseManager {
             }
 
             if (homes + 1 > maxHomes && maxHomes != 0) {
-                Homeward.adventure.player(player).sendMessage(Formatting.homeLimitReached);
+                Formatting.sendMessage(player, Formatting.homeLimitReached);
                 connection.close();
                 return;
             }
@@ -120,7 +120,7 @@ public class DatabaseManager {
             setHome.setInt(6, location.getBlockZ());
 
             setHome.executeUpdate();
-            Homeward.adventure.player(player).sendMessage(Formatting.homeCreated);
+            Formatting.sendMessage(player, Formatting.homeCreated);
 
             connection.close();
         } catch (SQLException e) {
@@ -139,9 +139,9 @@ public class DatabaseManager {
                 Location location = new Location(Bukkit.getWorld(UUID.fromString(home.getString("world"))),
                         home.getInt("x"), home.getInt("y"), home.getInt("z"));
                 player.teleport(location);
-                Homeward.adventure.player(player).sendMessage(Formatting.teleportedToHome);
+                Formatting.sendMessage(player, Formatting.teleportedToHome);
             }else{
-                Homeward.adventure.player(player).sendMessage(Formatting.homeNotFound);
+                Formatting.sendMessage(player, Formatting.homeNotFound);
             }
 
             connection.close();
@@ -158,7 +158,7 @@ public class DatabaseManager {
             nameCheck.setString(1, name);
             ResultSet nameResults = nameCheck.executeQuery();
             if(!nameResults.next()) {
-                Homeward.adventure.player(player).sendMessage(Formatting.homeNotFound);
+                Formatting.sendMessage(player, Formatting.homeNotFound);
                 connection.close();
                 return;
             }
@@ -168,7 +168,7 @@ public class DatabaseManager {
             ownerCheck.setString(2, player.getUniqueId().toString());
             ResultSet ownerResults = ownerCheck.executeQuery();
             if(!ownerResults.next() && !player.hasPermission("homeward.admin")){
-                Homeward.adventure.player(player).sendMessage(Formatting.dontOwnThisHome);
+                Formatting.sendMessage(player, Formatting.dontOwnThisHome);
                 connection.close();
                 return;
             }
@@ -177,7 +177,7 @@ public class DatabaseManager {
             deleteHome.setString(1, name);
 
             deleteHome.execute();
-            Homeward.adventure.player(player).sendMessage(Formatting.homeDeleted);
+            Formatting.sendMessage(player, Formatting.homeDeleted);
 
             connection.close();
         } catch (SQLException e) {
