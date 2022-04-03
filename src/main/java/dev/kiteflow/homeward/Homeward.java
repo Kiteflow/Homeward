@@ -1,67 +1,43 @@
 package dev.kiteflow.homeward;
 
-import dev.kiteflow.homeward.commands.*;
-import dev.kiteflow.homeward.commands.completers.DeleteHomeCompleter;
-import dev.kiteflow.homeward.commands.completers.HomeCompleter;
-import dev.kiteflow.homeward.managers.DatabaseManager;
-import dev.kiteflow.homeward.utils.Formatting;
-import net.kyori.adventure.platform.bukkit.BukkitAudiences;
-import org.bstats.bukkit.Metrics;
+import dev.kiteflow.homeward.utils.homes.HomesCache;
+import dev.kiteflow.homeward.utils.storage.DatabaseManager;
+import dev.kiteflow.homeward.utils.storage.DatabaseQuerier;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Homeward extends JavaPlugin {
-
     public static Plugin plugin;
     public static FileConfiguration config;
-    public static BukkitAudiences adventure;
 
-    public static int getMaxHomes(Player p){
-        if(p.hasPermission("homeward.admin")) return 0;
-        for(int i = 1; i < 32; i++){
-            String permission = String.format("homeward.homes.%s", i);
+    public static DatabaseQuerier databaseQuerier;
+    public static HomesCache homesCache;
 
-            if(p.hasPermission(permission)) return i;
-        }
-        return config.getInt("defaulthomes");
-    }
+    public static void setupConfig() {
+        plugin.saveDefaultConfig();
 
-    @SuppressWarnings("ConstantConditions")
-    private void registerCommands(){
-        this.getCommand("deletehome").setExecutor(new DeleteHomeCommand());
-        this.getCommand("deletehome").setTabCompleter(new DeleteHomeCompleter());
-        this.getCommand("home").setExecutor(new HomeCommand());
-        this.getCommand("home").setTabCompleter(new HomeCompleter());
-        this.getCommand("homes").setExecutor(new HomesCommand());
-        this.getCommand("sethome").setExecutor(new SetHomeCommand());
+        config.options().copyDefaults(true);
+        plugin.saveConfig();
+        plugin.reloadConfig();
+
+        config = plugin.getConfig();
     }
 
     @Override
     public void onEnable() {
         plugin = this;
-        adventure = BukkitAudiences.create(this);
+        setupConfig();
 
-        plugin.saveDefaultConfig();
-        config = plugin.getConfig();
+        databaseQuerier = new DatabaseQuerier();
 
-        DatabaseManager.setup();
+        homesCache = new HomesCache(50);
 
-        registerCommands();
-
-        int pluginId = 13017;
-        new Metrics(this, pluginId);
-
-        System.out.println("[Homeward] Homeward enabled!");
+        plugin.getLogger().info("Homeward enabled!");
     }
 
     @Override
     public void onDisable() {
-        if(adventure != null) {
-            adventure.close();
-            adventure = null;
-        }
-        System.out.println("[Homeward] AquaticHomes disabled!");
+        plugin.getLogger().info("Homeward disabled!");
     }
 }
