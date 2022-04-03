@@ -3,7 +3,6 @@ package dev.kiteflow.homeward.utils.homes;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 public class HomesCache {
@@ -20,7 +19,7 @@ public class HomesCache {
             cachedHomes.remove(firstHome);
         }
 
-        cachedHomes.put(home.getName(), home);
+        cachedHomes.put(home.getName().toLowerCase(), home);
     }
 
     public @Nullable Home getCachedHome(@NonNull String name) {
