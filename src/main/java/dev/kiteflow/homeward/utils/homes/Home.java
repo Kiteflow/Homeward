@@ -1,7 +1,7 @@
 package dev.kiteflow.homeward.utils.homes;
 
 import org.bukkit.Location;
-import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -9,8 +9,8 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import static dev.kiteflow.homeward.Homeward.config;
 import static dev.kiteflow.homeward.Homeward.databaseQuerier;
+import static dev.kiteflow.homeward.Homeward.homesCache;
 
 public class Home {
     private final UUID owner;
@@ -30,7 +30,7 @@ public class Home {
      * @throws IllegalArgumentException thrown when one of the arguments, likely the home name is not valid
      */
     public Home(@NonNull String name, @NonNull UUID owner, @NonNull HomeLocation location, @NonNull Boolean publicHome, @NonNull Integer visits) throws IllegalArgumentException {
-        this.name = (config.getBoolean("names.unicode") ? name : name.replaceAll("[^\\u0000-\\u007F]+", "")).substring(0, config.getInt("names.maxlength"));
+        this.name = name;
         this.owner = owner;
         this.location = location;
         this.publicHome = publicHome;
@@ -118,7 +118,10 @@ public class Home {
      * @throws IllegalArgumentException thrown when the home name is not usable
      */
     public void setName(@NonNull UUID player, @NonNull String name) throws IllegalAccessError, IllegalArgumentException {
-        if(player != owner) throw new IllegalAccessError("Not home owner!");
+        if(!owner.equals(player)) throw new IllegalAccessError("Not home owner!");
+        databaseQuerier.renameHome(this, name);
+        homesCache.removeHome(this);
+
         this.name = name;
     }
 
@@ -151,8 +154,12 @@ public class Home {
      * @throws IllegalAccessError thrown when the player cannot change the home's publicity
      */
     public void setPublic(@NonNull UUID player, @NonNull Boolean publicHome) throws IllegalAccessError {
-        if(player != owner) throw new IllegalAccessError("Not home owner!");
+        if(!owner.equals(player)) throw new IllegalAccessError("Not home owner!");
+
+        databaseQuerier.updatePrivacy(this);
         this.publicHome = publicHome;
+
+        homesCache.removeHome(this);
     }
 
     /**
@@ -178,26 +185,32 @@ public class Home {
      */
     public void newVisit() {
         this.visits++;
+        databaseQuerier.updateVisits(this);
+        homesCache.cacheHome(this);
     }
 
     /**
      * Set the home in the database
      *
-     * @throws UnsupportedOperationException thrown when the home already exists
+     * @throws IllegalArgumentException thrown when the home already exists
      */
-    public void setHome() throws UnsupportedOperationException {
+    public void setHome() throws IllegalArgumentException {
         databaseQuerier.setHome(this);
     }
 
     /**
-     * @param executor the CommandExecutor, used so it is console compatible
+     * @param sender the CommandSender, used so it is console compatible
      * @throws IllegalAccessError thrown when the executor does not have permission to delete the home
      */
-    public void deleteHome(@NonNull CommandExecutor executor) throws IllegalAccessError {
-        if(executor instanceof Player player) {
+    public void deleteHome(@NonNull CommandSender sender) throws IllegalAccessError {
+        if(sender instanceof Player player) {
             if(player.getUniqueId() == owner || player.hasPermission("homeward.admin")) {
                 databaseQuerier.deleteHome(this);
+
+                homesCache.removeHome(this);
             } else throw new IllegalAccessError("Not home owner!");
         } else databaseQuerier.deleteHome(this);
+
+        homesCache.removeHome(this);
     }
 }

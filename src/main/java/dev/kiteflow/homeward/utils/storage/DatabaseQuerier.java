@@ -28,7 +28,6 @@ public class DatabaseQuerier {
                 if(results.next()) {
                     home = new Home(results.getString("name"), UUID.fromString(results.getString("owner")), new HomeLocation(results.getString("location")), results.getBoolean("public"), results.getInt("visits"));
 
-                    Homeward.homesCache.cacheHome(home);
                     statement.close();
                     connection.close();
 
@@ -37,12 +36,13 @@ public class DatabaseQuerier {
             } else return home;
         } catch(SQLException e) {
             Homeward.logger.severe("Error retrieving home!");
+            e.printStackTrace();
         }
 
         throw new IllegalArgumentException("Home not found!");
     }
 
-    public void setHome(@NonNull Home home) throws UnsupportedOperationException {
+    public void setHome(@NonNull Home home) throws IllegalArgumentException {
         try {
             Connection connection = databaseManager.getConnection();
             PreparedStatement statement = connection.prepareStatement("INSERT INTO homes VALUES(?, ?, ?, ?, ?)");
@@ -53,7 +53,7 @@ public class DatabaseQuerier {
             statement.setInt(5, home.getVisits());
 
             statement.executeUpdate();
-            
+
             statement.close();
             connection.close();
         } catch(SQLException e) {
@@ -61,10 +61,69 @@ public class DatabaseQuerier {
         }
     }
 
-    public void deleteHome(@NonNull Home home) throws IllegalAccessError {
+    public void deleteHome(@NonNull Home home) {
+        try {
+            Connection connection = databaseManager.getConnection();
+            PreparedStatement statement = connection.prepareStatement("DELETE FROM homes WHERE name = ?");
+            statement.setString(1, home.getName());
+
+            statement.executeUpdate();
+
+            statement.close();
+            connection.close();
+        } catch(SQLException e) {
+            Homeward.logger.severe("Error deleting home!");
+        }
     }
-//    public void renameHome(@NonNull Home home, @NonNull String name) throws IllegalArgumentException {}
-//    public void updateVisits(@NonNull Home home) {}
+
+    public void renameHome(@NonNull Home home, @NonNull String name) throws IllegalArgumentException {
+        try {
+            Connection connection = databaseManager.getConnection();
+            PreparedStatement statement = connection.prepareStatement("UPDATE homes SET name = ? WHERE name = ?");
+            statement.setString(1, name);
+            statement.setString(2, home.getName());
+
+            statement.executeUpdate();
+
+            statement.close();
+            connection.close();
+        } catch(SQLException e) {
+            Homeward.logger.severe("Error renaming home!");
+        }
+    }
+
+    public void updateVisits(@NonNull Home home) {
+        try {
+            Connection connection = databaseManager.getConnection();
+            PreparedStatement statement = connection.prepareStatement("UPDATE homes SET visits = ? WHERE name = ?");
+            statement.setInt(1, home.getVisits());
+            statement.setString(2, home.getName());
+
+            statement.executeUpdate();
+
+            statement.close();
+            connection.close();
+        } catch(SQLException e) {
+            Homeward.logger.severe("Error updating home visits!");
+        }
+    }
+
+    public void updatePrivacy(@NonNull Home home) {
+        try {
+            Connection connection = databaseManager.getConnection();
+            PreparedStatement statement = connection.prepareStatement("UPDATE homes SET public = ? WHERE name = ?");
+            statement.setBoolean(1, home.getPublic());
+            statement.setString(2, home.getName());
+
+            statement.executeUpdate();
+
+            statement.close();
+            connection.close();
+        } catch(SQLException e) {
+            Homeward.logger.severe("Error updating home visits!");
+        }
+    }
+
 //    public ArrayList<Home> getPlayerHomes(@NonNull UUID player) {}
 //    public ArrayList<Home> getHomes(@NonNull Integer page) {}
 //    public ArrayList<Home> homeSearch(@Nullable String search) {}

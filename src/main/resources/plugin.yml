@@ -3,3 +3,28 @@ version: 2.0.0
 author: Kiteflow
 api-version: 1.16
 main: dev.kiteflow.homeward.Homeward
+commands:
+  closehome:
+    description: Stops other players using this home
+    usage: /closehome <home>
+  deletehome:
+    description: Deletes a home
+    usage: /deletehome <name>
+    aliases: [ delhome, removehome ]
+  openhome:
+    description: Lets other players using this home
+    usage: /openhome <home>
+  home:
+    description: Teleport to a home
+    usage: /home <name>
+    aliases: [ gethome ]
+  homevisits:
+    description: Gets the amount of visits a home has
+    usage: /homevisits <name>
+  renamehome:
+    description: Rename a home
+    usage: /renamehome <name>
+  sethome:
+    description: Set a new home
+    usage: /sethome <name>
+    aliases: [ newhome, createhome ]

@@ -25,4 +25,8 @@ public class HomesCache {
     public @Nullable Home getCachedHome(@NonNull String name) {
         return cachedHomes.get(name);
     }
+
+    public void removeHome(@NonNull Home home) {
+        cachedHomes.remove(home.getName());
+    }
 }

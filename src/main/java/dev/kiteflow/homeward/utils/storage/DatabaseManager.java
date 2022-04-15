@@ -55,7 +55,7 @@ public class DatabaseManager {
                             "owner varchar(36) NOT NULL," +
                             "location varchar(60) NOT NULL," +
                             "public BOOLEAN NOT NULL," +
-                            "visit INT UNSIGNED NOT NULL," +
+                            "visits INT UNSIGNED NOT NULL," +
                             "PRIMARY KEY (name)" +
                             ")"
             );
