@@ -1,5 +1,6 @@
 package dev.kiteflow.homeward.commands;
 
+import dev.kiteflow.homeward.Homeward;
 import dev.kiteflow.homeward.utils.homes.Home;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -14,10 +15,12 @@ public class DeleteHomeCommand implements CommandExecutor {
                 Home home = new Home(args[0]);
                 home.deleteHome(sender);
 
-                sender.sendMessage(String.format("Deleted home %s!", home.getName()));
+                sender.sendMessage(Homeward.formatter.getMessage("deletedHome"));
             } catch(IllegalArgumentException | IllegalAccessError error) {
                 sender.sendMessage(error.getMessage());
             }
+        } else {
+            sender.sendMessage(Homeward.formatter.getMessage("invalidFormat"));
         }
 
         return true;

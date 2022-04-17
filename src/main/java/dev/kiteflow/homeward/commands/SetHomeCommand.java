@@ -1,5 +1,6 @@
 package dev.kiteflow.homeward.commands;
 
+import dev.kiteflow.homeward.Homeward;
 import dev.kiteflow.homeward.utils.homes.Home;
 import dev.kiteflow.homeward.utils.homes.HomeLocation;
 import org.bukkit.command.Command;
@@ -17,14 +18,12 @@ public class SetHomeCommand implements CommandExecutor {
                     Home home = new Home(args[0], player.getUniqueId(), new HomeLocation(player.getLocation()), true, 0);
                     home.setHome();
 
-                    player.sendMessage(String.format("Home %s created!", home.getName()));
+                    player.sendMessage(Homeward.formatter.getMessage("homeCreated").replace("<home>", home.getName()));
                 } catch(IllegalArgumentException error) {
                     player.sendMessage(error.getMessage());
                 }
-            }
-        } else {
-            sender.sendMessage("Cannot run command from console!");
-        }
+            } else sender.sendMessage(Homeward.formatter.getMessage("invalidFormat"));
+        } else sender.sendMessage("Cannot run command from console!");
 
         return true;
     }

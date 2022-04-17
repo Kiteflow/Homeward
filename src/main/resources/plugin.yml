@@ -18,9 +18,9 @@ commands:
     description: Teleport to a home
     usage: /home <name>
     aliases: [ gethome ]
-  homevisits:
-    description: Gets the amount of visits a home has
-    usage: /homevisits <name>
+  homes:
+    description: Get a players homes
+    usage: /homes <player>
   renamehome:
     description: Rename a home
     usage: /renamehome <name>

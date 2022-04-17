@@ -1,7 +1,7 @@
 package dev.kiteflow.homeward.utils.homes;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedHashMap;
 
@@ -13,7 +13,7 @@ public class HomesCache {
         this.maxSize = maxSize;
     }
 
-    public void cacheHome(@NonNull Home home) {
+    public void cacheHome(@NotNull Home home) {
         if(cachedHomes.size() >= maxSize) {
             String firstHome = cachedHomes.keySet().iterator().next();
             cachedHomes.remove(firstHome);
@@ -22,11 +22,11 @@ public class HomesCache {
         cachedHomes.put(home.getName().toLowerCase(), home);
     }
 
-    public @Nullable Home getCachedHome(@NonNull String name) {
+    public @Nullable Home getCachedHome(@NotNull String name) {
         return cachedHomes.get(name);
     }
 
-    public void removeHome(@NonNull Home home) {
+    public void removeHome(@NotNull Home home) {
         cachedHomes.remove(home.getName());
     }
 }

@@ -1,5 +1,6 @@
 package dev.kiteflow.homeward.commands;
 
+import dev.kiteflow.homeward.Homeward;
 import dev.kiteflow.homeward.utils.homes.Home;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -17,17 +18,15 @@ public class RenameHomeCommand implements CommandExecutor {
                         Home home = new Home(args[0]);
                         home.setName(player.getUniqueId(), args[1]);
 
-                        player.sendMessage(String.format("Renamed home to %s!", home.getName()));
+                        player.sendMessage(Homeward.formatter.getMessage("renamedHome").replace("<name>", home.getName()));
                     } catch(IllegalArgumentException | IllegalAccessError error) {
                         player.sendMessage(error.getMessage());
                     }
                 } else {
-                    player.sendMessage("Invalid home name!");
+                    player.sendMessage(Homeward.formatter.getMessage("invalidHomeName"));
                 }
-            }
-        } else {
-            sender.sendMessage("Cannot run command from console!");
-        }
+            } else sender.sendMessage(Homeward.formatter.getMessage("invalidFormat"));
+        } else sender.sendMessage("Cannot run command from console!");
 
         return true;
     }

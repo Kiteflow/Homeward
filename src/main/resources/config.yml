@@ -1,4 +1,66 @@
-database:
-  host: "test"
+# Hi there :) Welcome to the Homeward config!
+# Thanks so much for installing Homeward, I hope you find it useful!
+# Homeward was designed to be a minimalist, customisable homes plugin
+# Not to mention we're open source!
 
-unicode: true
+homes:
+  # Here's where you set how many homes you want people to have by default
+  # There is a 32 home limit for anyone who hasn't got the "homeward.admin" permission.
+  # Home limits are set by permissions too! Just add "homeward.homes.x" with x being the home amount
+  defaulthomes: 1
+  # Any worlds you that homes shouldn't be available in should be put here
+  # Just remember "homeward.admin" does bypass this
+  disabled-worlds:
+    - world_nether
+    - world_the_end
+
+names:
+  unicode: false
+  maxlength: 20
+
+# Time to configure how you want your homes stored.
+# If you are storing a lot of homes, or have access to a MySQL database, I would highly suggest using MySQL.
+# Otherwise, you can just ignore this section, as Homeward can function without it!
+
+storage:
+  mysql:
+    enabled: false
+    host: test.com
+    port: 3306
+    username: test
+    password: "password"
+    database: test
+
+messages:
+  # If you want a custom prefix to appear before your messages, this is what you want to use!
+  prefix: "&6[Homeward]"
+
+  # Here comes the messages! All messages Homeward sends to a player are configurable.
+  # We recommend that these be a positive color, but it's your decision!
+  teleported: "&aTeleported to <home>!"
+  homeOpen: "&aHome now open!"
+  renamedHome: "&aHome renamed to <name>!"
+  homeCreated: "&aHome <home> created!"
+
+  homesListTitle: "&f<player>'s homes -&l"
+
+  # We would recommend these be a more negative color, but again, it's customisable for a reason!
+  homeClosed: "&cHome now closed!"
+  homeAlreadyClosed: "&cHome already closed!"
+  homeAlreadyOpen: "&cHome already open!"
+  deletedHome: "&cHome deleted!"
+  noHomesFound: "&cNo homes found!"
+  invalidFormat: "&cInvalid format!"
+  invalidHomeName: "&cInvalid home name!"
+  notHomeOwner: "&cNot the home owner!"
+  homePrivate: "&cThis home is private!"
+  homeNotFound: "&cHome not found!"
+  unicodeCharacters: "&cUnicode characters not allowed!"
+  homeNameLength: "&cHome name is too long!"
+  homeAlreadyExists: "&cHome already exists!"
+  homeLimit: "&cHome limit reached!"
+  cannotCreateHome: "&cCannot create home in this world!"
+
+  # Thanks for configuring Homeward! I hope it serves you well.
+  # If you have any bugs to report, please make a github issue!
+  # https://github.com/Kiteflow/Homeward

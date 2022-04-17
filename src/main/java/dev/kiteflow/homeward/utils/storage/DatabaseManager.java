@@ -2,6 +2,7 @@ package dev.kiteflow.homeward.utils.storage;
 
 import com.mysql.cj.jdbc.MysqlDataSource;
 import dev.kiteflow.homeward.Homeward;
+import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.Connection;
@@ -22,22 +23,23 @@ public class DatabaseManager {
         if(storageType == MYSQL) {
             mysqlDataSource = new MysqlDataSource();
 
-            mysqlDataSource.setServerName(Homeward.config.getString("database.host"));
-            mysqlDataSource.setPort(Homeward.config.getInt("database.port"));
-            mysqlDataSource.setUser(Homeward.config.getString("database.username"));
-            mysqlDataSource.setPassword(Homeward.config.getString("database.password"));
-            mysqlDataSource.setDatabaseName(Homeward.config.getString("database.databaseName"));
+            ConfigurationSection settings = Homeward.config.getConfigurationSection("storage.mysql");
+
+            mysqlDataSource.setServerName(settings.getString("host"));
+            mysqlDataSource.setPort(settings.getInt("port"));
+            mysqlDataSource.setUser(settings.getString("username"));
+            mysqlDataSource.setPassword(settings.getString("password"));
+            mysqlDataSource.setDatabaseName(settings.getString("database"));
         }
 
         this.setupDatabase();
     }
 
     public Connection getConnection() throws SQLException {
-        Connection connection = null;
-
+        Connection connection;
         switch(storageType) {
             case MYSQL -> connection = mysqlDataSource.getConnection();
-            case SQLITE -> connection = DriverManager.getConnection("jdbc:sqlite:" + Homeward.plugin.getDataFolder() + "/homes.db");
+            default -> connection = DriverManager.getConnection("jdbc:sqlite:" + Homeward.plugin.getDataFolder() + "/homes.db");
         }
 
         return connection;
@@ -51,7 +53,7 @@ public class DatabaseManager {
             //@formatter:off
             statement.executeUpdate(
                     "CREATE TABLE IF NOT EXISTS homes(" +
-                            "name varchar(32) NOT NULL," +
+                            "name varchar(64) NOT NULL," +
                             "owner varchar(36) NOT NULL," +
                             "location varchar(60) NOT NULL," +
                             "public BOOLEAN NOT NULL," +
@@ -69,6 +71,7 @@ public class DatabaseManager {
             Homeward.logger.severe("Cannot create database tables! Reverting to SQLite!");
 
             this.storageType = SQLITE;
+            setupDatabase();
         }
     }
 }

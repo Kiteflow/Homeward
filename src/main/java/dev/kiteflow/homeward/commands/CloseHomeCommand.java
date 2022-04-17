@@ -1,5 +1,6 @@
 package dev.kiteflow.homeward.commands;
 
+import dev.kiteflow.homeward.Homeward;
 import dev.kiteflow.homeward.utils.homes.Home;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -14,18 +15,16 @@ public class CloseHomeCommand implements CommandExecutor {
             if(args.length == 1) {
                 try {
                     Home home = new Home(args[0]);
-                    if(!home.getPublic()) player.sendMessage("Home already closed!");
+                    if(!home.getPublic()) player.sendMessage(Homeward.formatter.getMessage("homeAlreadyClosed"));
                     else {
                         home.setPublic(player.getUniqueId(), false);
-                        player.sendMessage(String.format("Home %s is now closed!", home.getName()));
+                        player.sendMessage(Homeward.formatter.getMessage("homeClosed"));
                     }
                 } catch(IllegalArgumentException | IllegalAccessError error) {
                     player.sendMessage(error.getMessage());
                 }
-            }
-        } else {
-            sender.sendMessage("Cannot run command from console!");
-        }
+            } else sender.sendMessage(Homeward.formatter.getMessage("invalidFormat"));
+        } else sender.sendMessage("Cannot run command from console!");
 
         return true;
     }

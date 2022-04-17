@@ -1,10 +1,12 @@
 package dev.kiteflow.homeward.utils.homes;
 
+import dev.kiteflow.homeward.Homeward;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -29,7 +31,7 @@ public class Home {
      * @param visits     the total amount of visits the home has had
      * @throws IllegalArgumentException thrown when one of the arguments, likely the home name is not valid
      */
-    public Home(@NonNull String name, @NonNull UUID owner, @NonNull HomeLocation location, @NonNull Boolean publicHome, @NonNull Integer visits) throws IllegalArgumentException {
+    public Home(@NotNull String name, @NotNull UUID owner, @NotNull HomeLocation location, @NotNull Boolean publicHome, @NotNull Integer visits) throws IllegalArgumentException {
         this.name = name;
         this.owner = owner;
         this.location = location;
@@ -43,13 +45,13 @@ public class Home {
      * @param name the name of the home being searched for
      * @throws IllegalArgumentException thrown when the home is not found
      */
-    public Home(@NonNull String name) throws IllegalArgumentException {
+    public Home(@NotNull String name) throws IllegalArgumentException {
         Home home;
 
         try {
             home = databaseQuerier.getHome(name);
         } catch(IllegalArgumentException e) {
-            throw new IllegalArgumentException("Home not found!");
+            throw new IllegalArgumentException(Homeward.formatter.getMessage("homeNotFound"));
         }
 
         this.owner = home.owner;
@@ -60,33 +62,55 @@ public class Home {
     }
 
     /**
-     * Get the requested player's homes
+     * Get the requested player's public homes
      *
      * @param player the UUID of the player whose homes are being requested
-     * @return list of the players homes, or null if there aren't any
+     * @return list of the player's public homes
      */
-    public static ArrayList<Home> getPlayerHomes(@NonNull UUID player) {
-        return null;
+    public static @NotNull ArrayList<String> getPublicPlayerHomes(@NotNull UUID player) {
+        return databaseQuerier.getPublicPlayerHomes(player);
     }
 
     /**
-     * Get an ArrayList of 10 homes from the database, determined by the page number
+     * Get the requested player's homes
      *
-     * @param page the homes page number being requested
-     * @return an arraylist of 10 homes from the requested page number
+     * @param player the UUID of the player whose homes are being requested
+     * @return list of the player's homes
      */
-    public static ArrayList<Home> getHomes(Integer page) {
-        return null;
+    public static @NotNull ArrayList<String> getPlayerHomes(@NotNull UUID player) {
+        return databaseQuerier.getPrivatePlayerHomes(player);
     }
 
     /**
      * Get an ArrayList of homes whose names match the search string
      *
      * @param search search string used for matching with home names
-     * @return an ArrayList of homes whose names match the search string
+     * @return an ArrayList of home names that match the search string
      */
-    public static ArrayList<Home> homeSearch(@Nullable String search) {
-        return null;
+    public static ArrayList<String> homeSearch(@NotNull String search) {
+        return databaseQuerier.homeSearch(search);
+    }
+
+
+    /**
+     * Get the maximum amount of homes a specified player can have.
+     * Do not call if Player is not online!
+     *
+     * @param uuid the UUID of the player
+     * @return the maximum amount of homes this player can have
+     */
+    public static int playerMaxHomes(UUID uuid) {
+        Player player = Bukkit.getPlayer(uuid);
+
+        if(player.hasPermission("homeward.admin")) return Integer.MAX_VALUE;
+
+        for(int i = 1; i < 64; i++) {
+            String permission = String.format("homeward.homes.%s", i);
+
+            if(player.hasPermission(permission)) return i;
+        }
+
+        return Homeward.config.getInt("homes.defaulthomes");
     }
 
     /**
@@ -117,7 +141,7 @@ public class Home {
      * @throws IllegalAccessError       thrown when the player doesn't have permission to rename the home
      * @throws IllegalArgumentException thrown when the home name is not usable
      */
-    public void setName(@NonNull UUID player, @NonNull String name) throws IllegalAccessError, IllegalArgumentException {
+    public void setName(@NotNull UUID player, @NotNull String name) throws IllegalAccessError, IllegalArgumentException {
         if(!owner.equals(player)) throw new IllegalAccessError("Not home owner!");
         databaseQuerier.renameHome(this, name);
         homesCache.removeHome(this);
@@ -141,8 +165,13 @@ public class Home {
      * @return the location of the home
      * @throws IllegalAccessError thrown when the home is not accessible to the player
      */
-    public Location getLocation(@NonNull UUID player) throws IllegalAccessError {
-        if(!publicHome && (player != owner)) throw new IllegalAccessError("This home is private!");
+    public Location getLocation(@Nullable UUID player) throws IllegalAccessError {
+        if(player == null) return location.getLocation();
+
+        if((!publicHome && !player.equals(owner)))
+            throw new IllegalAccessError(Homeward.formatter.getMessage("homePrivate"));
+
+        this.newVisit();
         return location.getLocation();
     }
 
@@ -153,11 +182,11 @@ public class Home {
      * @param publicHome the new value for whether home is public (true) or private (false)
      * @throws IllegalAccessError thrown when the player cannot change the home's publicity
      */
-    public void setPublic(@NonNull UUID player, @NonNull Boolean publicHome) throws IllegalAccessError {
-        if(!owner.equals(player)) throw new IllegalAccessError("Not home owner!");
+    public void setPublic(@NotNull UUID player, @NotNull Boolean publicHome) throws IllegalAccessError {
+        if(!owner.equals(player)) throw new IllegalAccessError(Homeward.formatter.getMessage("notHomeOwner"));
 
-        databaseQuerier.updatePrivacy(this);
         this.publicHome = publicHome;
+        databaseQuerier.updatePrivacy(this);
 
         homesCache.removeHome(this);
     }
@@ -202,13 +231,13 @@ public class Home {
      * @param sender the CommandSender, used so it is console compatible
      * @throws IllegalAccessError thrown when the executor does not have permission to delete the home
      */
-    public void deleteHome(@NonNull CommandSender sender) throws IllegalAccessError {
+    public void deleteHome(@NotNull CommandSender sender) throws IllegalAccessError {
         if(sender instanceof Player player) {
-            if(player.getUniqueId() == owner || player.hasPermission("homeward.admin")) {
+            if(player.getUniqueId().equals(owner) || player.hasPermission("homeward.admin")) {
                 databaseQuerier.deleteHome(this);
 
                 homesCache.removeHome(this);
-            } else throw new IllegalAccessError("Not home owner!");
+            } else throw new IllegalAccessError(Homeward.formatter.getMessage("notHomeOwner"));
         } else databaseQuerier.deleteHome(this);
 
         homesCache.removeHome(this);
